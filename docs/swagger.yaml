@@ -1,0 +1,160 @@
+definitions:
+  dto.HealthReturn:
+    properties:
+      status:
+        example: ok/down
+        type: string
+    type: object
+  dto.MovieDto:
+    properties:
+      director:
+        type: string
+      title:
+        type: string
+      year:
+        maximum: 2100
+        minimum: 1940
+        type: integer
+    required:
+    - director
+    - title
+    - year
+    type: object
+  dto.ServerError:
+    properties:
+      error:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  model.Movie:
+    properties:
+      director:
+        type: string
+      id:
+        type: string
+      title:
+        type: string
+      year:
+        type: integer
+    type: object
+  model.MoviesPaginated:
+    properties:
+      movies:
+        items:
+          $ref: '#/definitions/model.Movie'
+        type: array
+      total_count:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/movies:
+    get:
+      consumes:
+      - application/json
+      description: Get all Movies paginated
+      parameters:
+      - default: 0
+        description: index of the page
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: number of elements to return in a page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MoviesPaginated'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ServerError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ServerError'
+      summary: Get all Movies paginated
+      tags:
+      - Movies
+    post:
+      consumes:
+      - application/json
+      description: Insert a new movie
+      parameters:
+      - description: body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MovieDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Movie'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ServerError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ServerError'
+      summary: Insert a new movie
+      tags:
+      - Movies
+  /api/v1/movies/{movie_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Movie by ID
+      parameters:
+      - description: movie_id
+        in: path
+        name: movie_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Movie'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ServerError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ServerError'
+      summary: Get Movie by ID
+      tags:
+      - Movies
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Do health check
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.HealthReturn'
+      summary: Health check
+      tags:
+      - Public
+swagger: "2.0"
